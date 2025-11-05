@@ -3,10 +3,13 @@ package com.example.mapingtegration;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -23,6 +27,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+
+import java.util.Arrays;
 
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -38,6 +48,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_map);
 
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getString(R.string.google_map_key));
+        }
+
+        initAutocomplete();
+
         btnCurrentLocation = findViewById(R.id.btnCurrentLocation);
         tvCoordinates = findViewById(R.id.tvCoordinates);
 
@@ -50,7 +66,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         btnCurrentLocation.setOnClickListener(v -> {
             getCurrentLocation();
         });
-        Log.d("MAP_KEY", getString(R.string.map_api_key));
     }
 
     @Override
@@ -155,6 +170,47 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                 });
     }
+
+    private void initAutocomplete() {
+        AutocompleteSupportFragment autocompleteFragment =
+                (AutocompleteSupportFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.autocomplete_fragment);
+
+        assert autocompleteFragment != null;
+
+        EditText editText = autocompleteFragment.getView()
+                .findViewById(com.google.android.libraries.places.R.id.places_autocomplete_search_input);
+
+        editText.setBackgroundResource(R.drawable.search_bar_bg);
+        editText.setTextColor(Color.WHITE);
+        editText.setHintTextColor(Color.BLACK);
+        editText.setTextSize(10);
+        editText.setPadding(40, 10, 10, 10);
+        editText.setHint("Search location");
+
+        autocompleteFragment.setPlaceFields(Arrays.asList(
+                Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.LAT_LNG,
+                Place.Field.ADDRESS
+        ));
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                Log.d("AUTOCOMPLETE", "Place: " + place.getName());
+                if (place.getLatLng() != null) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 16));
+                }
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+                Log.e("AUTOCOMPLETE", "Error: " + status);
+            }
+        });
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,

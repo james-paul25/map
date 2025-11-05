@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="16dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <fragment
         android:id="@+id/map"
@@ -12,16 +12,25 @@
         android:layout_height="match_parent"
         tools:ignore="FragmentTagUsage" />
 
+    <fragment
+        android:id="@+id/autocomplete_fragment"
+        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="40dp"
+        android:layout_alignParentTop="true" />
+
     <Button
         android:id="@+id/btnCurrentLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="My Location"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/purple_button"
-        android:textColor="@color/white" />
+        android:text="My Location"
+        android:textColor="@android:color/white"
+        android:background="@drawable/glass_button"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvCoordinates"
@@ -29,10 +38,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:background="#80000000"
-        android:padding="10dp"
+        android:layout_marginTop="76dp"
+        android:background="#66000000"
+        android:padding="8dp"
         android:text="Lat: 0.0, Lng: 0.0"
         android:textColor="@android:color/white"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 </RelativeLayout>

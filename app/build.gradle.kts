@@ -14,7 +14,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        resValue("string", "map_api_key", project.findProperty("MAPS_API_KEY") as String? ?: "")
+        resValue("string", "google_map_key", project.findProperty("MAPS_API_KEY") as String? ?: "")
     }
 
     buildTypes {
@@ -43,4 +43,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.android.libraries.places:places:3.3.0")
 }
