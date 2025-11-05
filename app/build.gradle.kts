@@ -14,6 +14,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        resValue("string", "map_api_key", project.findProperty("MAPS_API_KEY") as String? ?: "")
     }
 
     buildTypes {
