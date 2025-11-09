@@ -43,6 +43,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private Button btnCurrentLocation, btnChangeMapType;
     private TextView tvCoordinates;
+    private LatLng currentLatlng;
 
     @Override
     protected void onCreate(Bundle savedInstance){
@@ -121,7 +122,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
     }
-
     private void getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -147,11 +147,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             tvCoordinates.setText(String.format(
                                     "Lat: %.4f, Lng: %.4f", latitude, longitude));
                             LatLng currentLocation = new LatLng(latitude, longitude);
+                            currentLatlng = currentLocation;
                             mMap.clear();
                             mMap.addMarker(new MarkerOptions()
                                     .position(currentLocation)
-                                    .title("You are here"))
-                                    .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                                    .title("You are here"));
                             mMap.animateCamera(
                                     CameraUpdateFactory.newLatLngZoom(currentLocation, 15),
                                     2000,
@@ -195,9 +195,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                Log.d("AUTOCOMPLETE", "Place: " + place.getName());
+                LatLng selectedLatlng = place.getLatLng();
+
                 if (place.getLatLng() != null) {
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 16));
+                    mMap.addMarker(new MarkerOptions()
+                                    .position(place.getLatLng())
+                                    .title("You search this place"))
+                                    .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+
+                    if(currentLatlng != null){
+                        float distanceMeter = calculateDistance(currentLatlng, selectedLatlng);
+                        float distanceKm = distanceMeter/1000f;
+                        Toast.makeText(
+                                getApplicationContext(),
+                                "Distance: " + String.format("%.2f", distanceKm) + " km",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
                 }
             }
 
@@ -207,7 +222,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
     }
+    private float calculateDistance(LatLng p1, LatLng p2){
+        float[] results = new float[1];
+        Location.distanceBetween(
+                p1.latitude, p1.longitude,
+                p2.latitude, p2.longitude,
+                results
+        );
 
+        return results[0];
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
