@@ -21,6 +21,18 @@
         android:layout_alignParentTop="true" />
 
     <Button
+        android:id="@+id/btnChangeMapType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Map Type"
+        android:layout_above="@id/btnCurrentLocation"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/glass_button"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
+    <Button
         android:id="@+id/btnCurrentLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
